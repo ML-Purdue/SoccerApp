@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Collections.ObjectModel;
+using System.Numerics;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using FootballSimulation;
 
 namespace FootballSimulationApp
 {
@@ -16,6 +19,9 @@ namespace FootballSimulationApp
         private TimeSpan _accumulatedTime;
         private Bitmap _backBuffer;
         private TimeSpan _lastTime;
+        private Simulation Simulation;
+        private Team Team1;
+        private Team Team2;
 
         public MainForm()
         {
@@ -27,6 +33,39 @@ namespace FootballSimulationApp
                 ControlStyles.DoubleBuffer, true);
 
             Application.Idle += OnIdle;
+
+            PointMass[][] players = new PointMass[2][];
+
+            for (int i = 0; i < 2; i++)
+            {
+                players[i] = new PointMass[5];
+                for (int j = 0; j < 5; j++)
+                {
+                    // (float mass, float radius, float maxForce, float maxSpeed, Vector2 position, Vector2 velocity)
+                    Vector2 position = new Vector2();
+                    position.X = 300 + 100 * j;
+                    position.Y = 200 + 600 * i;
+
+                    Vector2 velocity = new Vector2();
+                    velocity.X = 0;
+                    velocity.Y = 0;
+
+                    players[i][j] = new PointMass(100, 10, 100, 100, position, velocity);
+                }
+            }
+            /*
+            // Fix if needed (coordinate system)
+            RectangleF pitch = new RectangleF(0, 0, 4200, 6600);
+            RectangleF team1Goal = new RectangleF(2100 - 240, 0, 480 , 160);
+            RectangleF team2Goal = new RectangleF(2100 - 240, 6600, 480, 160);
+
+            Team1 = new Team(NullTeamStrategy.Instance, new ReadOnlyCollection<PointMass>(players[0]), team1Goal);
+            Team2 = new Team(NullTeamStrategy.Instance, new ReadOnlyCollection<PointMass>(players[1]), team2Goal);
+
+            PointMass ball = new PointMass(10, 5, 100, 100, new Vector2(2100, 3300), new Vector2(0, 0));
+
+            Simulation = new Simulation(new ReadOnlyCollection<Team>(new Team[]{ Team1, Team2 }), ball, pitch); */
+
         }
 
         private static bool IsMessageAvailable
