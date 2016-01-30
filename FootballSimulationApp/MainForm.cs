@@ -7,7 +7,7 @@ using System.Windows.Forms;
 
 namespace FootballSimulationApp
 {
-    internal partial class Form1 : Form
+    internal partial class MainForm : Form
     {
         private readonly Color _backgroundColor = Color.Green;
         private readonly TimeSpan _maxElapsedTime = TimeSpan.FromTicks(TimeSpan.TicksPerSecond/10);
@@ -18,7 +18,7 @@ namespace FootballSimulationApp
         private TimeSpan _lastTime;
         private double x = 10;
 
-        public Form1()
+        public MainForm()
         {
             InitializeComponent();
 
