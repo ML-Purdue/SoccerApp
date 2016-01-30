@@ -101,5 +101,10 @@ namespace FootballSimulationApp
             }
         }
         #endregion
+
+        private void okButton_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
+        }
     }
 }
