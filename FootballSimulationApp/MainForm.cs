@@ -82,7 +82,7 @@ namespace FootballSimulationApp
 
         private void MainForm_Resize(object sender, EventArgs e)
         {
-            _backBuffer.Dispose();
+            _backBuffer?.Dispose();
             _backBuffer = new Bitmap(ClientSize.Width, ClientSize.Height);
         }
 
