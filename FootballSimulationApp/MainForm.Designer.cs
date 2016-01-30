@@ -104,9 +104,9 @@
             this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "MainForm";
             this.Text = "Football Simulation";
-            this.Load += new System.EventHandler(this.Form1_Load);
-            this.Paint += new System.Windows.Forms.PaintEventHandler(this.Form1_Paint);
-            this.Resize += new System.EventHandler(this.Form1_Resize);
+            this.Load += new System.EventHandler(this.MainForm_Load);
+            this.Paint += new System.Windows.Forms.PaintEventHandler(this.MainForm_Paint);
+            this.Resize += new System.EventHandler(this.MainForm_Resize);
             this.menuStrip.ResumeLayout(false);
             this.menuStrip.PerformLayout();
             this.ResumeLayout(false);
