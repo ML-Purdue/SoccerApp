@@ -62,12 +62,12 @@ namespace FootballSimulationApp
             _lastTime = currentTime;
             _accumulatedTime += elapsedTime > _maxElapsedTime ? _maxElapsedTime : elapsedTime;
 
-            if (_accumulatedTime > _targetElapsedTime)
-            {
+            if (_accumulatedTime < _targetElapsedTime)
+                return;
+
+            Update(_targetElapsedTime);
+            while ((_accumulatedTime -= _targetElapsedTime) >= _targetElapsedTime)
                 Update(_targetElapsedTime);
-                while ((_accumulatedTime -= _targetElapsedTime) >= _targetElapsedTime)
-                    Update(_targetElapsedTime);
-            }
 
             Invalidate();
         }
