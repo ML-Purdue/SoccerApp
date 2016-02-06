@@ -13,9 +13,9 @@ namespace FootballSimulationApp
     internal partial class MainForm : Form
     {
         private readonly Color _backgroundColor = Color.Green;
-        private readonly TimeSpan _maxElapsedTime = TimeSpan.FromTicks(TimeSpan.TicksPerSecond/10);
+        private readonly TimeSpan _maxElapsedTime = TimeSpan.FromTicks(TimeSpan.TicksPerSecond / 10);
         private readonly Stopwatch _stopwatch = new Stopwatch();
-        private readonly TimeSpan _targetElapsedTime = TimeSpan.FromTicks(TimeSpan.TicksPerSecond/60);
+        private readonly TimeSpan _targetElapsedTime = TimeSpan.FromTicks(TimeSpan.TicksPerSecond / 60);
         private TimeSpan _accumulatedTime;
         private Bitmap _backBuffer;
         private TimeSpan _lastTime;
@@ -36,6 +36,9 @@ namespace FootballSimulationApp
 
             PointMass[][] players = new PointMass[2][];
 
+            int windowW = ClientSize.Width;
+            int windowH = ClientSize.Height;
+
             for (int i = 0; i < 2; i++)
             {
                 players[i] = new PointMass[5];
@@ -43,29 +46,27 @@ namespace FootballSimulationApp
                 {
                     // (float mass, float radius, float maxForce, float maxSpeed, Vector2 position, Vector2 velocity)
                     Vector2 position = new Vector2();
-                    position.X = 300 + 100 * j;
-                    position.Y = 200 + 600 * i;
+                    position.X = windowW / 4 + i * windowW / 2;
+                    position.Y = windowH / 10 * 3 + j * windowH / 10;
 
-                    Vector2 velocity = new Vector2();
-                    velocity.X = 0;
-                    velocity.Y = 0;
-
-                    players[i][j] = new PointMass(100, 10, 100, 100, position, velocity);
+                    players[i][j] = new PointMass(100, 10, 100, 100, position, Vector2.Zero);
                 }
             }
-            /*
+
             // Fix if needed (coordinate system)
-            RectangleF pitch = new RectangleF(0, 0, 4200, 6600);
-            RectangleF team1Goal = new RectangleF(2100 - 240, 0, 480 , 160);
-            RectangleF team2Goal = new RectangleF(2100 - 240, 6600, 480, 160);
+
+            int goalW = windowW / 20;
+            int goalH = windowH / 4;
+            RectangleF pitch = new RectangleF(0, 0, windowW, windowH);
+            RectangleF team1Goal = new RectangleF(-goalW, windowH / 2 - goalH / 2, goalW, goalH);
+            RectangleF team2Goal = new RectangleF(windowW, windowH / 2 - goalH / 2, goalW, goalH);
 
             Team1 = new Team(NullTeamStrategy.Instance, new ReadOnlyCollection<PointMass>(players[0]), team1Goal);
             Team2 = new Team(NullTeamStrategy.Instance, new ReadOnlyCollection<PointMass>(players[1]), team2Goal);
 
-            PointMass ball = new PointMass(10, 5, 100, 100, new Vector2(2100, 3300), new Vector2(0, 0));
+            PointMass ball = new PointMass(1, 5, 100, 100, new Vector2(windowW / 2, windowH / 2), Vector2.Zero);
 
-            Simulation = new Simulation(new ReadOnlyCollection<Team>(new Team[]{ Team1, Team2 }), ball, pitch); */
-
+            Simulation = new Simulation(new ReadOnlyCollection<Team>(new Team[] { Team1, Team2 }), ball, pitch, 0.05f);
         }
 
         private static bool IsMessageAvailable
@@ -79,15 +80,44 @@ namespace FootballSimulationApp
 
         private void Update(TimeSpan elapsedTime)
         {
-            // TODO: Add update code.
+            Simulation.Simulate((float)elapsedTime.TotalSeconds);
+        }
+
+        private static Rectangle GetBoundingRect(IPointMass pointMass)
+        {
+            var p = pointMass.Position;
+            var r = pointMass.Radius;
+            var result = new Rectangle((int)(p.X - r), (int)(p.Y - r), (int)r, (int)r);
+            return result;
+        }
+
+        private static Rectangle ToRectangle(RectangleF r)
+        {
+            return new Rectangle((int)r.X, (int)r.Y, (int)r.Width, (int)r.Height);
+        }
+
+        private void DrawTeam(Team t, Brush brush, Graphics g)
+        {
+            foreach (var p in t.Players)
+            {
+                g.FillEllipse(brush, GetBoundingRect(p));
+                var norm = Vector2.Normalize(p.Velocity);
+                g.DrawLine(Pens.Black, p.Position.X, p.Position.Y, p.Position.X + norm.X, p.Position.Y + norm.Y);
+            }
         }
 
         private void Draw(Graphics g)
         {
             g.SmoothingMode = SmoothingMode.AntiAlias;
             g.Clear(_backgroundColor);
-
-            // TODO: Add drawing code.
+            g.ScaleTransform(0.8f, 0.8f);
+            g.TranslateTransform(100, 50);
+            DrawTeam(Team1, Brushes.Red, g);
+            DrawTeam(Team2, Brushes.Blue, g);
+            g.DrawRectangle(Pens.White, ToRectangle(Simulation.PitchBounds));
+            g.DrawRectangle(Pens.White, ToRectangle(Simulation.Teams[0].GoalBounds));
+            g.DrawRectangle(Pens.White, ToRectangle(Simulation.Teams[1].GoalBounds));
+            g.FillEllipse(Brushes.Magenta, GetBoundingRect(Simulation.Ball));
         }
 
         private void OnIdle(object sender, EventArgs e)
