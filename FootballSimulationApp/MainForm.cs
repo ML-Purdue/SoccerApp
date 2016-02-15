@@ -32,28 +32,27 @@ namespace FootballSimulationApp
 
             Application.Idle += OnIdle;
 
-            var w = 1000;
-            var h = 500;
-            var players = new PointMass[2][];
+            const float w = 1000;
+            const float h = 500;
+            const float goalW = w / 20;
+            const float goalH = h / 4;
 
-            for (var i = 0; i < 2; i++)
+            var team1Players = new PointMass[5];
+            var team2Players = new PointMass[5];
+            
+            for (var j = 0; j < 5; j++)
             {
-                players[i] = new PointMass[5];
-                for (var j = 0; j < 5; j++)
-                {
-                    players[i][j] = new PointMass(100, 10, 100, 100,
-                        new Vector2(-w/4 + i*w/2, -h/4 + j*h/8),
-                        Vector2.Zero);
-                }
+                team1Players[j] = new PointMass(100, 10, 100, 100,
+                    new Vector2(-w/4 + w/2, -h/4 + j*h/8), Vector2.Zero);
+                team2Players[j] = new PointMass(100, 10, 100, 100,
+                    new Vector2(-w / 4, -h / 4 + j * h / 8), Vector2.Zero);
             }
-
-            var goalW = w/20;
-            var goalH = h/4;
+            
             var pitch = new RectangleF(-w/2, -h/2, w, h);
             var team1Goal = new RectangleF(-w/2 - goalW, -goalH/2, goalW, goalH);
-            var team2Goal = new RectangleF(w/2,-goalH/2, goalW, goalH);
-            var team1 = new Team(NullTeamStrategy.Instance, new ReadOnlyCollection<PointMass>(players[0]), team1Goal);
-            var team2 = new Team(NullTeamStrategy.Instance, new ReadOnlyCollection<PointMass>(players[1]), team2Goal);
+            var team2Goal = new RectangleF(w/2, -goalH/2, goalW, goalH);
+            var team1 = new Team(NullTeamStrategy.Instance, new ReadOnlyCollection<PointMass>(team1Players), team1Goal);
+            var team2 = new Team(NullTeamStrategy.Instance, new ReadOnlyCollection<PointMass>(team2Players), team2Goal);
             var ball = new PointMass(1, 5, 100, 100, Vector2.Zero, Vector2.Zero);
 
             _simulation = new Simulation(new ReadOnlyCollection<Team>(new[] {team1, team2}), ball, pitch, 0.05f);
@@ -85,15 +84,15 @@ namespace FootballSimulationApp
 
         private void Draw(Graphics g)
         {
-            var innerAspectRatio = _simulation.PitchBounds.Width / _simulation.PitchBounds.Height;
-            var outerAspectRatio = (float) ClientSize.Width / ClientSize.Height;
-            var resizeFactor = 0.8f * (innerAspectRatio >= outerAspectRatio ?
-                ClientSize.Width / _simulation.PitchBounds.Width :
-                ClientSize.Height / _simulation.PitchBounds.Height);
+            var innerAspectRatio = _simulation.PitchBounds.Width/_simulation.PitchBounds.Height;
+            var outerAspectRatio = (float) ClientSize.Width/ClientSize.Height;
+            var resizeFactor = 0.8f*(innerAspectRatio >= outerAspectRatio
+                ? ClientSize.Width/_simulation.PitchBounds.Width
+                : ClientSize.Height/_simulation.PitchBounds.Height);
 
             g.SmoothingMode = SmoothingMode.AntiAlias;
             g.Clear(_backgroundColor);
-            g.TranslateTransform(ClientSize.Width / 2, ClientSize.Height / 2);
+            g.TranslateTransform(ClientSize.Width/2f, ClientSize.Height/2f);
             g.ScaleTransform(resizeFactor, resizeFactor);
             DrawTeam(_simulation.Teams[0], Brushes.Red, g);
             DrawTeam(_simulation.Teams[1], Brushes.Blue, g);
@@ -102,7 +101,8 @@ namespace FootballSimulationApp
             g.DrawRectangle(Pens.White, _simulation.Teams[1].GoalBounds);
             var w = _simulation.PitchBounds.Width;
             g.DrawEllipse(Pens.White, -w/10, -w/10, w/5, w/5);
-            g.FillCircle(Brushes.Magenta, _simulation.Ball.Position + new Vector2(_simulation.Ball.Radius/2), _simulation.Ball.Radius);
+            g.FillCircle(Brushes.Magenta, _simulation.Ball.Position + new Vector2(_simulation.Ball.Radius/2),
+                _simulation.Ball.Radius);
         }
 
         private void OnIdle(object sender, EventArgs e)
