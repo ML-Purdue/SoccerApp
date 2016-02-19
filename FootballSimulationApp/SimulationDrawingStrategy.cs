@@ -21,6 +21,7 @@ namespace FootballSimulationApp
             _teamPens = from c in teamColors select new Pen(c);
             _teamBrushes = from c in teamColors select new SolidBrush(c);
         }
+
         public void Dispose()
         {
             _linePen.Dispose();
