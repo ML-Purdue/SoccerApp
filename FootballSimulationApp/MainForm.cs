@@ -12,7 +12,7 @@ namespace FootballSimulationApp
         private readonly ISimulationDrawingStrategy _drawingStrategy =
             new SimulationDrawingStrategy(Color.White, Color.Black, new[] {Color.OrangeRed, Color.Blue});
 
-        private readonly GameLoop _gameLoop;
+        private readonly FixedTimeStepGameLoop _gameLoop;
         private readonly Simulation _simulation = SimulationFactory.Create2V2Simulation();
         private Bitmap _backBuffer;
 
@@ -22,7 +22,7 @@ namespace FootballSimulationApp
 
             SetStyle(ControlStyles.UserPaint | ControlStyles.AllPaintingInWmPaint | ControlStyles.DoubleBuffer, true);
 
-            _gameLoop = new GameLoop(
+            _gameLoop = new FixedTimeStepGameLoop(
                 TimeSpan.FromTicks(TimeSpan.TicksPerSecond/60),
                 TimeSpan.FromTicks(TimeSpan.TicksPerSecond/10),
                 t => _simulation.Simulate((float)t.TotalSeconds),
@@ -31,7 +31,7 @@ namespace FootballSimulationApp
             Application.Idle += (sender, e) =>
             {
                 while (!IsMessageAvailable)
-                    _gameLoop.OnTick();
+                    _gameLoop.Tick();
             };
         }
 

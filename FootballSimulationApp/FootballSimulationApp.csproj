@@ -145,7 +145,7 @@
     <Compile Include="AboutBox.Designer.cs">
       <DependentUpon>AboutBox.cs</DependentUpon>
     </Compile>
-    <Compile Include="GameLoop.cs" />
+    <Compile Include="FixedTimeStepGameLoop.cs" />
     <Compile Include="NativeMethods.cs" />
     <Compile Include="EnumerableExtensions.cs" />
     <Compile Include="GraphicsExtensions.cs" />
