@@ -7,7 +7,7 @@ using FootballSimulation;
 
 namespace FootballSimulationApp
 {
-    internal sealed class SimulationDrawingStrategy : ISimulationDrawingStrategy
+    internal sealed class SimulationDrawingStrategy : ISimulationDrawingStrategy, IDisposable
     {
         private readonly Brush _ballBrush;
         private readonly Pen _linePen;
@@ -20,6 +20,13 @@ namespace FootballSimulationApp
             _ballBrush = new SolidBrush(ball);
             _teamPens = from c in teamColors select new Pen(c);
             _teamBrushes = from c in teamColors select new SolidBrush(c);
+        }
+        public void Dispose()
+        {
+            _linePen.Dispose();
+            _ballBrush.Dispose();
+            _teamPens.ForEach(p => p.Dispose());
+            _teamBrushes.ForEach(b => b.Dispose());
         }
 
         public void Draw(Graphics g, ISimulation s)
