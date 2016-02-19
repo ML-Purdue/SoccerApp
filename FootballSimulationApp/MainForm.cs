@@ -12,11 +12,11 @@ namespace FootballSimulationApp
 {
     internal partial class MainForm : Form
     {
-        private readonly Color _backgroundColor = Color.Green;
         private readonly TimeSpan _maxElapsedTime = TimeSpan.FromTicks(TimeSpan.TicksPerSecond/10);
         private readonly Simulation _simulation;
         private readonly Stopwatch _stopwatch = new Stopwatch();
         private readonly TimeSpan _targetElapsedTime = TimeSpan.FromTicks(TimeSpan.TicksPerSecond/60);
+
         private TimeSpan _accumulatedTime;
         private Bitmap _backBuffer;
         private TimeSpan _lastTime;
@@ -34,20 +34,24 @@ namespace FootballSimulationApp
 
             const float w = 1000;
             const float h = 500;
-            const float goalW = w / 20;
-            const float goalH = h / 4;
+            const float goalW = w/20;
+            const float goalH = h/4;
+            const float mass = 1;
+            const float radius = 20;
+            const float maxForce = 100;
+            const float maxSpeed = 100;
 
             var team1Players = new PointMass[5];
             var team2Players = new PointMass[5];
-            
+
             for (var j = 0; j < 5; j++)
             {
-                team1Players[j] = new PointMass(100, 10, 100, 100,
+                team1Players[j] = new PointMass(mass, radius, maxForce, maxSpeed,
                     new Vector2(-w/4 + w/2, -h/4 + j*h/8), Vector2.Zero);
-                team2Players[j] = new PointMass(100, 10, 100, 100,
-                    new Vector2(-w / 4, -h / 4 + j * h / 8), Vector2.Zero);
+                team2Players[j] = new PointMass(mass, radius, maxForce, maxSpeed,
+                    new Vector2(-w/4, -h/4 + j*h/8), Vector2.Zero);
             }
-            
+
             var pitch = new RectangleF(-w/2, -h/2, w, h);
             var team1Goal = new RectangleF(-w/2 - goalW, -goalH/2, goalW, goalH);
             var team2Goal = new RectangleF(w/2, -goalH/2, goalW, goalH);
@@ -72,14 +76,23 @@ namespace FootballSimulationApp
             _simulation.Simulate((float) elapsedTime.TotalSeconds);
         }
 
-        private static void DrawTeam(ITeam t, Brush brush, Graphics g)
+        private static void DrawPointMass(IPointMass pointMass, Pen pen, Brush brush, Graphics g)
         {
-            foreach (var p in t.Players)
+            var triangle = new[]
             {
-                g.FillCircle(brush, p.Position, p.Radius);
-                var norm = Vector2.Normalize(p.Velocity);
-                g.DrawLine(Pens.Black, p.Position.X, p.Position.Y, p.Position.X + norm.X, p.Position.Y + norm.Y);
-            }
+                new PointF(1, 0),
+                new PointF(-1/(float) Math.Sqrt(2), 1/(float) Math.Sqrt(2)),
+                new PointF(-1/(float) Math.Sqrt(2), -1/(float) Math.Sqrt(2))
+            };
+
+            var m = new Matrix();
+            m.Translate(pointMass.Position.X, pointMass.Position.Y);
+            m.Rotate((float) Math.Atan2(pointMass.Velocity.Y, pointMass.Velocity.X));
+            m.Scale(pointMass.Radius/2, pointMass.Radius/2);
+            m.TransformPoints(triangle);
+
+            g.FillPolygon(brush, triangle);
+            g.DrawCircle(pen, pointMass.Position, pointMass.Radius);
         }
 
         private void Draw(Graphics g)
@@ -91,18 +104,17 @@ namespace FootballSimulationApp
                 : ClientSize.Height/_simulation.PitchBounds.Height);
 
             g.SmoothingMode = SmoothingMode.AntiAlias;
-            g.Clear(_backgroundColor);
+            g.Clear(Color.Green);
             g.TranslateTransform(ClientSize.Width/2f, ClientSize.Height/2f);
             g.ScaleTransform(resizeFactor, resizeFactor);
-            DrawTeam(_simulation.Teams[0], Brushes.Red, g);
-            DrawTeam(_simulation.Teams[1], Brushes.Blue, g);
+            _simulation.Teams[0].Players.ForEach(p => DrawPointMass(p, Pens.Red, Brushes.Red, g));
+            _simulation.Teams[1].Players.ForEach(p => DrawPointMass(p, Pens.Blue, Brushes.Blue, g));
             g.DrawRectangle(Pens.White, _simulation.PitchBounds);
             g.DrawRectangle(Pens.White, _simulation.Teams[0].GoalBounds);
             g.DrawRectangle(Pens.White, _simulation.Teams[1].GoalBounds);
             var w = _simulation.PitchBounds.Width;
             g.DrawEllipse(Pens.White, -w/10, -w/10, w/5, w/5);
-            g.FillCircle(Brushes.Magenta, _simulation.Ball.Position + new Vector2(_simulation.Ball.Radius/2),
-                _simulation.Ball.Radius);
+            g.FillCircle(Brushes.Magenta, _simulation.Ball.Position, _simulation.Ball.Radius);
         }
 
         private void OnIdle(object sender, EventArgs e)
