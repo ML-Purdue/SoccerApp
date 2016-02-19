@@ -147,6 +147,7 @@
     </Compile>
     <Compile Include="EnumerableExtensions.cs" />
     <Compile Include="GraphicsExtensions.cs" />
+    <Compile Include="ISimulationDrawingStrategy.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -155,6 +156,7 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SimulationDrawingStrategy.cs" />
     <EmbeddedResource Include="AboutBox.resx">
       <DependentUpon>AboutBox.cs</DependentUpon>
     </EmbeddedResource>

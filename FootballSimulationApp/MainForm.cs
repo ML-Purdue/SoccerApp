@@ -12,6 +12,9 @@ namespace FootballSimulationApp
 {
     internal partial class MainForm : Form
     {
+        private readonly Color _clearColor = Color.Green;
+        private readonly ISimulationDrawingStrategy _drawingStrategy =
+            new SimulationDrawingStrategy(Color.White, Color.Black, new [] {Color.OrangeRed, Color.Blue});
         private readonly TimeSpan _maxElapsedTime = TimeSpan.FromTicks(TimeSpan.TicksPerSecond/10);
         private readonly Simulation _simulation;
         private readonly Stopwatch _stopwatch = new Stopwatch();
@@ -71,50 +74,31 @@ namespace FootballSimulationApp
             }
         }
 
-        private void Update(TimeSpan elapsedTime)
-        {
-            _simulation.Simulate((float) elapsedTime.TotalSeconds);
-        }
-
-        private static void DrawPointMass(IPointMass pointMass, Pen pen, Brush brush, Graphics g)
-        {
-            var triangle = new[]
-            {
-                new PointF(1, 0),
-                new PointF(-1/(float) Math.Sqrt(2), 1/(float) Math.Sqrt(2)),
-                new PointF(-1/(float) Math.Sqrt(2), -1/(float) Math.Sqrt(2))
-            };
-
-            var m = new Matrix();
-            m.Translate(pointMass.Position.X, pointMass.Position.Y);
-            m.Rotate((float) Math.Atan2(pointMass.Velocity.Y, pointMass.Velocity.X));
-            m.Scale(pointMass.Radius/2, pointMass.Radius/2);
-            m.TransformPoints(triangle);
-
-            g.FillPolygon(brush, triangle);
-            g.DrawCircle(pen, pointMass.Position, pointMass.Radius);
-        }
+        private void Update(TimeSpan elapsedTime) => _simulation.Simulate((float) elapsedTime.TotalSeconds);
 
         private void Draw(Graphics g)
         {
-            var innerAspectRatio = _simulation.PitchBounds.Width/_simulation.PitchBounds.Height;
-            var outerAspectRatio = (float) ClientSize.Width/ClientSize.Height;
-            var resizeFactor = 0.8f*(innerAspectRatio >= outerAspectRatio
-                ? ClientSize.Width/_simulation.PitchBounds.Width
-                : ClientSize.Height/_simulation.PitchBounds.Height);
+            g.Clear(_clearColor);
+            TransformGraphics(g);
+            _drawingStrategy.Draw(g, _simulation);
+        }
 
-            g.SmoothingMode = SmoothingMode.AntiAlias;
-            g.Clear(Color.Green);
+        private void TransformGraphics(Graphics g)
+        {
+            var s = GetScalingFactor();
             g.TranslateTransform(ClientSize.Width/2f, ClientSize.Height/2f);
-            g.ScaleTransform(resizeFactor, resizeFactor);
-            _simulation.Teams[0].Players.ForEach(p => DrawPointMass(p, Pens.Red, Brushes.Red, g));
-            _simulation.Teams[1].Players.ForEach(p => DrawPointMass(p, Pens.Blue, Brushes.Blue, g));
-            g.DrawRectangle(Pens.White, _simulation.PitchBounds);
-            g.DrawRectangle(Pens.White, _simulation.Teams[0].GoalBounds);
-            g.DrawRectangle(Pens.White, _simulation.Teams[1].GoalBounds);
-            var w = _simulation.PitchBounds.Width;
-            g.DrawEllipse(Pens.White, -w/10, -w/10, w/5, w/5);
-            g.FillCircle(Brushes.Magenta, _simulation.Ball.Position, _simulation.Ball.Radius);
+            g.ScaleTransform(s, s);
+        }
+
+        private float GetScalingFactor()
+        {
+            var pitchBounds = _simulation.PitchBounds;
+            var innerAspect = pitchBounds.Width/pitchBounds.Height;
+            var outerAspect = (float) ClientSize.Width/ClientSize.Height;
+
+            return 0.9f*(innerAspect >= outerAspect
+                ? ClientSize.Width/pitchBounds.Width
+                : ClientSize.Height/pitchBounds.Height);
         }
 
         private void OnIdle(object sender, EventArgs e)
