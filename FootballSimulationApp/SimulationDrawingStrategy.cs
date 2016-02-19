@@ -52,11 +52,13 @@ namespace FootballSimulationApp
         {
             var triangle = new[] {new PointF(1, 0), new PointF(-0.7f, 0.7f), new PointF(-0.7f, -0.7f)};
 
-            var m = new Matrix();
-            m.Translate(pointMass.Position.X, pointMass.Position.Y);
-            m.Rotate((float) Math.Atan2(pointMass.Velocity.Y, pointMass.Velocity.X));
-            m.Scale(pointMass.Radius/2, pointMass.Radius/2);
-            m.TransformPoints(triangle);
+            using (var m = new Matrix())
+            {
+                m.Translate(pointMass.Position.X, pointMass.Position.Y);
+                m.Rotate((float) Math.Atan2(pointMass.Velocity.Y, pointMass.Velocity.X));
+                m.Scale(pointMass.Radius/2, pointMass.Radius/2);
+                m.TransformPoints(triangle);
+            }
 
             g.FillPolygon(brush, triangle);
             g.DrawCircle(pen, pointMass.Position, pointMass.Radius);
