@@ -11,8 +11,10 @@ namespace FootballSimulationApp
     internal partial class MainForm : Form
     {
         private readonly Color _clearColor = Color.Green;
+
         private readonly ISimulationDrawingStrategy _drawingStrategy =
-            new SimulationDrawingStrategy(Color.White, Color.Black, new [] {Color.OrangeRed, Color.Blue});
+            new SimulationDrawingStrategy(Color.White, Color.Black, new[] {Color.OrangeRed, Color.Blue});
+
         private readonly TimeSpan _maxElapsedTime = TimeSpan.FromTicks(TimeSpan.TicksPerSecond/10);
         private readonly Simulation _simulation;
         private readonly Stopwatch _stopwatch = new Stopwatch();
@@ -70,6 +72,12 @@ namespace FootballSimulationApp
                 NativeMethods.Message message;
                 return NativeMethods.PeekMessage(out message, IntPtr.Zero, 0, 0, 0);
             }
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            _backBuffer.Dispose();
+            base.Dispose(disposing);
         }
 
         private void Update(TimeSpan elapsedTime) => _simulation.Simulate((float) elapsedTime.TotalSeconds);
