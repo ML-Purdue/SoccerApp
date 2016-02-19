@@ -54,12 +54,13 @@ namespace FootballSimulationApp
         {
             var pitchBounds = _simulation.PitchBounds;
             var innerAspect = pitchBounds.Width / pitchBounds.Height;
-            var outerAspect = (float)ClientSize.Width / ClientSize.Height;
+            var clientHeight = ClientSize.Height - menuStrip.ClientSize.Height;
+            var outerAspect = (float)ClientSize.Width / clientHeight;
             var s = 0.9f * (innerAspect >= outerAspect
                 ? ClientSize.Width / pitchBounds.Width
-                : ClientSize.Height / pitchBounds.Height);
+                : clientHeight / pitchBounds.Height);
 
-            g.TranslateTransform(ClientSize.Width/2f, ClientSize.Height/2f);
+            g.TranslateTransform(ClientSize.Width/2f, clientHeight/2f + menuStrip.ClientSize.Height);
             g.ScaleTransform(s, s);
         }
         
