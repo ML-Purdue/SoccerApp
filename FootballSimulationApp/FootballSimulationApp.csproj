@@ -145,6 +145,7 @@
     <Compile Include="AboutBox.Designer.cs">
       <DependentUpon>AboutBox.cs</DependentUpon>
     </Compile>
+    <Compile Include="NativeMethods.cs" />
     <Compile Include="EnumerableExtensions.cs" />
     <Compile Include="GraphicsExtensions.cs" />
     <Compile Include="ISimulationDrawingStrategy.cs" />

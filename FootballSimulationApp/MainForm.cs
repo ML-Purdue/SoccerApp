@@ -2,9 +2,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Drawing;
-using System.Drawing.Drawing2D;
 using System.Numerics;
-using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using FootballSimulation;
 
@@ -156,28 +154,5 @@ namespace FootballSimulationApp
         private void exitToolStripMenuItem_Click(object sender, EventArgs e) => Application.Exit();
 
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e) => new AboutBox().Show();
-
-        private static class NativeMethods
-        {
-            [DllImport("User32.dll")]
-            [return: MarshalAs(UnmanagedType.Bool)]
-            public static extern bool PeekMessage(
-                out Message message,
-                IntPtr hWnd,
-                uint filterMin,
-                uint filterMax,
-                uint flags);
-
-            [StructLayout(LayoutKind.Sequential)]
-            public struct Message
-            {
-                private readonly IntPtr hWnd;
-                private readonly uint Msg;
-                private readonly IntPtr wParam;
-                private readonly IntPtr lParam;
-                private readonly uint Time;
-                private readonly Point Point;
-            }
-        }
     }
 }
