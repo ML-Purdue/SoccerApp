@@ -97,8 +97,9 @@ namespace FootballSimulationApp
 
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            using (var aboutBox = new AboutBox())
-                aboutBox.Show();
+            var aboutBox = new AboutBox();
+            aboutBox.Show();
+            aboutBox.Closed += (s, a) => aboutBox.Dispose();
         }
     }
 }
