@@ -32,11 +32,11 @@ namespace FootballSimulationApp
             var pitch = new RectangleF(-w / 2, -h / 2, w, h);
             var team1Goal = new RectangleF(-w / 2 - goalW, -goalH / 2, goalW, goalH);
             var team2Goal = new RectangleF(w / 2, -goalH / 2, goalW, goalH);
-            var team1 = new Team(NullTeamStrategy.Instance, new ReadOnlyCollection<PointMass>(team1Players), team1Goal);
+            var team1 = new Team(new TeamStrategyA(), new ReadOnlyCollection<PointMass>(team1Players), team1Goal);
             var team2 = new Team(NullTeamStrategy.Instance, new ReadOnlyCollection<PointMass>(team2Players), team2Goal);
             var ball = new PointMass(1, 5, 100, 100, Vector2.Zero, Vector2.Zero);
 
             return new Simulation(new ReadOnlyCollection<Team>(new[] { team1, team2 }), ball, pitch, 0.05f);
         }
-     }
+    }
 }

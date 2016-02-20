@@ -121,8 +121,7 @@
     <CodeContractsRunCodeAnalysis>False</CodeContractsRunCodeAnalysis>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="FootballSimulation, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="FootballSimulation">
       <HintPath>..\..\Soccer\FootballSimulation\bin\Debug\FootballSimulation.dll</HintPath>
     </Reference>
     <Reference Include="System" />
@@ -160,6 +159,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SimulationDrawingStrategy.cs" />
     <Compile Include="SimulationFactory.cs" />
+    <Compile Include="TeamStrategyA.cs" />
     <EmbeddedResource Include="AboutBox.resx">
       <DependentUpon>AboutBox.cs</DependentUpon>
     </EmbeddedResource>
