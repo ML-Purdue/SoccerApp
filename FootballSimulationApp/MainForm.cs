@@ -30,23 +30,14 @@ namespace FootballSimulationApp
 
             Application.Idle += (sender, e) =>
             {
-                while (!IsMessageAvailable)
+                while (!NativeMethods.IsMessageAvailable)
                     _gameLoop.OnTick();
             };
         }
 
-        private static bool IsMessageAvailable
-        {
-            get
-            {
-                NativeMethods.Message message;
-                return NativeMethods.PeekMessage(out message, IntPtr.Zero, 0, 0, 0);
-            }
-        }
-
         protected override void Dispose(bool disposing)
         {
-            _backBuffer.Dispose();
+            _backBuffer?.Dispose();
             base.Dispose(disposing);
         }
         
