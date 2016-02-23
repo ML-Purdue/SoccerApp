@@ -10,8 +10,8 @@ namespace FootballSimulationApp
         {
             get
             {
-                NativeMethods.Message message;
-                return NativeMethods.PeekMessage(out message, IntPtr.Zero, 0, 0, 0);
+                Message message;
+                return PeekMessage(out message, IntPtr.Zero, 0, 0, 0);
             }
         }
 
