@@ -13,6 +13,7 @@ namespace FootballSimulationApp
         private readonly Pen _linePen;
         private readonly IEnumerable<Brush> _teamBrushes;
         private readonly IEnumerable<Pen> _teamPens;
+        private readonly Font _font;
 
         /// <summary>
         ///     Initializes a new instance of this class with the specified colors used for drawing the game.
@@ -23,12 +24,14 @@ namespace FootballSimulationApp
         ///     The colors of each of the teams. Colors should be in order of the <c>Teams</c> property in
         ///     <see cref="ISimulation" />.
         /// </param>
-        public SimulationDrawingStrategy(Color line, Color ball, IList<Color> teamColors)
+        /// <param name="font">Font to draw debug text.</param>
+        public SimulationDrawingStrategy(Color line, Color ball, IList<Color> teamColors, Font font)
         {
             _linePen = new Pen(line);
             _ballBrush = new SolidBrush(ball);
             _teamPens = from c in teamColors select new Pen(c);
             _teamBrushes = from c in teamColors select new SolidBrush(c);
+            _font = font;
         }
 
         /// <summary>
@@ -59,7 +62,7 @@ namespace FootballSimulationApp
         private void DrawPitch(Graphics g, ISimulation s)
         {
             var w = s.PitchBounds.Width;
-            g.DrawEllipse(_linePen, -w/10, -w/10, w/5, w/5);
+            g.DrawEllipse(_linePen, -w / 10, -w / 10, w / 5, w / 5);
             g.DrawRectangle(_linePen, s.PitchBounds);
             g.DrawRectangle(_linePen, s.Teams[0].GoalBounds);
             g.DrawRectangle(_linePen, s.Teams[1].GoalBounds);
@@ -67,18 +70,25 @@ namespace FootballSimulationApp
 
         private static void DrawPointMass(IPointMass pointMass, Pen pen, Brush brush, Graphics g)
         {
-            var triangle = new[] {new PointF(1, 0), new PointF(-0.7f, 0.7f), new PointF(-0.7f, -0.7f)};
+            var triangle = new[] { new PointF(1, 0), new PointF(-0.7f, 0.7f), new PointF(-0.7f, -0.7f) };
 
             using (var m = new Matrix())
             {
                 m.Translate(pointMass.Position.X, pointMass.Position.Y);
                 m.Rotate((float)(Math.Atan2(pointMass.Velocity.Y, pointMass.Velocity.X) * 180 / Math.PI));
-                m.Scale(pointMass.Radius/2, pointMass.Radius/2);
+                m.Scale(pointMass.Radius / 2, pointMass.Radius / 2);
                 m.TransformPoints(triangle);
             }
 
             g.FillPolygon(brush, triangle);
             g.DrawCircle(pen, pointMass.Position, pointMass.Radius);
+        }
+
+        private static void DrawDebugInfo(IPointMass pointMass, Brush brush, Font font, Graphics g)
+        {
+            g.DrawString("Position: " + pointMass.Position + 
+                "\nVelocity: " + pointMass.Velocity + 
+                "\nAcceleration: " + pointMass.Acceleration, font, brush, new PointF(pointMass.Position.X, pointMass.Position.Y));
         }
 
         private void DrawTeams(Graphics g, ISimulation s)
@@ -90,10 +100,17 @@ namespace FootballSimulationApp
             {
                 pe.MoveNext();
                 be.MoveNext();
-                t.Players.ForEach(p => DrawPointMass(p, pe.Current, be.Current, g));
+                t.Players.ForEach(p => {
+                    DrawPointMass(p, pe.Current, be.Current, g);
+                    DrawDebugInfo(p, be.Current, _font, g);
+                });
             }
         }
 
-        private void DrawBall(Graphics g, ISimulation s) => g.FillCircle(_ballBrush, s.Ball.Position, s.Ball.Radius);
+        private void DrawBall(Graphics g, ISimulation s)
+        {
+            g.FillCircle(_ballBrush, s.Ball.Position, s.Ball.Radius);
+            DrawDebugInfo(s.Ball, _ballBrush, _font, g);
+        }
     }
 }

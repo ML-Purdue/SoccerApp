@@ -21,7 +21,7 @@ namespace FootballSimulationApp
 
             _simulation = SimulationFactory.Create2V2Simulation();
             _drawingStrategy = new SimulationDrawingStrategy(Color.White, Color.Black,
-                new[] {Color.OrangeRed, Color.Blue});
+                new[] {Color.OrangeRed, Color.Blue}, new Font("Arial", 8));
             _gameLoop = new FixedTimeStepGameLoop(
                 TimeSpan.FromTicks(TimeSpan.TicksPerSecond/60),
                 TimeSpan.FromTicks(TimeSpan.TicksPerSecond/10),
