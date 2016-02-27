@@ -31,6 +31,10 @@ namespace FootballSimulationApp
             Application.Idle += Application_Idle;
         }
 
+        private int ClientWidth => ClientSize.Width;
+
+        private int ClientHeight => ClientSize.Height;
+
         private static float ScaleToFit(SizeF size, float width, float height)
             => size.Width/size.Height >= width/height ? width/size.Width : height/size.Height;
 
@@ -49,25 +53,25 @@ namespace FootballSimulationApp
 
         private void MainForm_Load(object sender, EventArgs e)
         {
-            _backBuffer = new Bitmap(ClientSize.Width, ClientSize.Height);
+            _backBuffer = new Bitmap(ClientWidth, ClientHeight);
             _gameLoop.Start();
         }
 
         private void MainForm_Resize(object sender, EventArgs e)
         {
             _backBuffer?.Dispose();
-            _backBuffer = new Bitmap(ClientSize.Width, ClientSize.Height);
+            _backBuffer = new Bitmap(ClientWidth, ClientHeight);
         }
 
         private void MainForm_Paint(object sender, PaintEventArgs e)
         {
             using (var g = Graphics.FromImage(_backBuffer))
             {
-                var clientHeight = ClientSize.Height - menuStrip.ClientSize.Height;
-                var s = 0.9f*ScaleToFit(_simulation.PitchBounds.Size, ClientSize.Width, ClientSize.Height);
+                var clientHeight = ClientHeight - menuStrip.Height;
+                var s = 0.9f*ScaleToFit(_simulation.PitchBounds.Size, ClientWidth, ClientHeight);
 
                 g.Clear(_clearColor);
-                g.TranslateTransform(ClientSize.Width/2f, clientHeight/2f + menuStrip.ClientSize.Height);
+                g.TranslateTransform(ClientWidth/2f, clientHeight/2f + menuStrip.Height);
                 g.ScaleTransform(s, s);
 
                 _drawingStrategy.Draw(g, _simulation);
