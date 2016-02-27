@@ -86,7 +86,7 @@ namespace FootballSimulationApp
             throw new NotImplementedException();
         }
 
-        private void exitToolStripMenuItem_Click(object sender, EventArgs e) => Application.Exit();
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e) => Close();
 
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
