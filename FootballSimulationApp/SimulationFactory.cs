@@ -14,7 +14,7 @@ namespace FootballSimulationApp
             const float goalW = w / 20;
             const float goalH = h / 4;
             const float mass = 1;
-            const float radius = 20;
+            const float radius = 7.5f;
             const float maxForce = 100;
             const float maxSpeed = 100;
 
@@ -34,7 +34,7 @@ namespace FootballSimulationApp
             var team2Goal = new RectangleF(w / 2, -goalH / 2, goalW, goalH);
             var team1 = new Team(new TeamStrategyA(), new ReadOnlyCollection<PointMass>(team1Players), team1Goal);
             var team2 = new Team(NullTeamStrategy.Instance, new ReadOnlyCollection<PointMass>(team2Players), team2Goal);
-            var ball = new PointMass(1, 5, 100, 100, Vector2.Zero, Vector2.Zero);
+            var ball = new PointMass(1, 2.5f, 100, 100, Vector2.Zero, Vector2.Zero);
 
             return new Simulation(new ReadOnlyCollection<Team>(new[] { team1, team2 }), ball, pitch, 0.05f);
         }
