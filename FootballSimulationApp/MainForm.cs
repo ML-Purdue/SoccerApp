@@ -42,6 +42,7 @@ namespace FootballSimulationApp
         {
             Application.Idle -= Application_Idle;
             _backBuffer.Dispose();
+            _drawingStrategy.Dispose();
             base.Dispose(disposing);
         }
 

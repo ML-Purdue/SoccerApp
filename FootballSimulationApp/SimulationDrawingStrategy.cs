@@ -7,7 +7,7 @@ using FootballSimulation;
 
 namespace FootballSimulationApp
 {
-    internal sealed class SimulationDrawingStrategy : ISimulationDrawingStrategy, IDisposable
+    internal sealed class SimulationDrawingStrategy : ISimulationDrawingStrategy
     {
         private readonly Brush _ballBrush;
         private readonly Pen _linePen;

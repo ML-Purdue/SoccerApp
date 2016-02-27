@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 using FootballSimulation;
 
 namespace FootballSimulationApp
@@ -6,7 +7,7 @@ namespace FootballSimulationApp
     /// <summary>
     ///     Encapsulates a drawing strategy for a football simulation.
     /// </summary>
-    internal interface ISimulationDrawingStrategy
+    internal interface ISimulationDrawingStrategy : IDisposable
     {
         /// <summary>
         ///     Draws the simulation with the specified graphics context.
