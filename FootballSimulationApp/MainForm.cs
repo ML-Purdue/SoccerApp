@@ -30,38 +30,18 @@ namespace FootballSimulationApp
 
             Application.Idle += (sender, e) =>
             {
-                while (!IsMessageAvailable)
+                while (!NativeMethods.IsMessageAvailable)
                     _gameLoop.Tick();
             };
         }
 
-        private static bool IsMessageAvailable
-        {
-            get
-            {
-                NativeMethods.Message message;
-                return NativeMethods.PeekMessage(out message, IntPtr.Zero, 0, 0, 0);
-            }
-        }
+        private static float ScaleToFit(SizeF size, float width, float height)
+            => size.Width / size.Height >= width / height ? width / size.Width : height / size.Height;
 
         protected override void Dispose(bool disposing)
         {
-            _backBuffer.Dispose();
+            _backBuffer?.Dispose();
             base.Dispose(disposing);
-        }
-        
-        private void TransformGraphics(Graphics g)
-        {
-            var pitchBounds = _simulation.PitchBounds;
-            var innerAspect = pitchBounds.Width / pitchBounds.Height;
-            var clientHeight = ClientSize.Height - menuStrip.ClientSize.Height;
-            var outerAspect = (float)ClientSize.Width / clientHeight;
-            var s = 0.9f * (innerAspect >= outerAspect
-                ? ClientSize.Width / pitchBounds.Width
-                : clientHeight / pitchBounds.Height);
-
-            g.TranslateTransform(ClientSize.Width/2f, clientHeight/2f + menuStrip.ClientSize.Height);
-            g.ScaleTransform(s, s);
         }
         
         private void MainForm_Load(object sender, EventArgs e)
@@ -80,8 +60,13 @@ namespace FootballSimulationApp
         {
             using (var g = Graphics.FromImage(_backBuffer))
             {
+                var clientHeight = ClientSize.Height - menuStrip.ClientSize.Height;
+                var s = 0.9f*ScaleToFit(_simulation.PitchBounds.Size, ClientSize.Width, ClientSize.Height);
+
                 g.Clear(_clearColor);
-                TransformGraphics(g);
+                g.TranslateTransform(ClientSize.Width/2f, clientHeight/2f + menuStrip.ClientSize.Height);
+                g.ScaleTransform(s, s);
+
                 _drawingStrategy.Draw(g, _simulation);
             }
 
