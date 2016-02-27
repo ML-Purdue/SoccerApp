@@ -8,12 +8,9 @@ namespace FootballSimulationApp
     internal sealed partial class MainForm : Form
     {
         private readonly Color _clearColor = Color.Green;
-
-        private readonly ISimulationDrawingStrategy _drawingStrategy =
-            new SimulationDrawingStrategy(Color.White, Color.Black, new[] {Color.OrangeRed, Color.Blue});
-
+        private readonly ISimulationDrawingStrategy _drawingStrategy;
         private readonly FixedTimeStepGameLoop _gameLoop;
-        private readonly Simulation _simulation = SimulationFactory.Create2V2Simulation();
+        private readonly Simulation _simulation;
         private Bitmap _backBuffer;
 
         public MainForm()
@@ -22,17 +19,20 @@ namespace FootballSimulationApp
 
             SetStyle(ControlStyles.UserPaint | ControlStyles.AllPaintingInWmPaint | ControlStyles.DoubleBuffer, true);
 
+            _simulation = SimulationFactory.Create2V2Simulation();
+            _drawingStrategy = new SimulationDrawingStrategy(Color.White, Color.Black,
+                new[] {Color.OrangeRed, Color.Blue});
             _gameLoop = new FixedTimeStepGameLoop(
                 TimeSpan.FromTicks(TimeSpan.TicksPerSecond/60),
                 TimeSpan.FromTicks(TimeSpan.TicksPerSecond/10),
-                t => _simulation.Simulate((float)t.TotalSeconds),
+                t => _simulation.Simulate((float) t.TotalSeconds),
                 t => { Invalidate(); });
 
             Application.Idle += Application_Idle;
         }
 
         private static float ScaleToFit(SizeF size, float width, float height)
-            => size.Width / size.Height >= width / height ? width / size.Width : height / size.Height;
+            => size.Width/size.Height >= width/height ? width/size.Width : height/size.Height;
 
         protected override void Dispose(bool disposing)
         {
