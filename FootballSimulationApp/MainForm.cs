@@ -28,11 +28,7 @@ namespace FootballSimulationApp
                 t => _simulation.Simulate((float)t.TotalSeconds),
                 t => { Invalidate(); });
 
-            Application.Idle += (sender, e) =>
-            {
-                while (!NativeMethods.IsMessageAvailable)
-                    _gameLoop.Tick();
-            };
+            Application.Idle += Application_Idle;
         }
 
         private static float ScaleToFit(SizeF size, float width, float height)
@@ -40,10 +36,17 @@ namespace FootballSimulationApp
 
         protected override void Dispose(bool disposing)
         {
+            Application.Idle -= Application_Idle;
             _backBuffer?.Dispose();
             base.Dispose(disposing);
         }
-        
+
+        private void Application_Idle(object sender, EventArgs e)
+        {
+            while (!NativeMethods.IsMessageAvailable)
+                _gameLoop.Tick();
+        }
+
         private void MainForm_Load(object sender, EventArgs e)
         {
             _backBuffer = new Bitmap(ClientSize.Width, ClientSize.Height);
