@@ -26,7 +26,7 @@ namespace FootballSimulationApp
                 TimeSpan.FromTicks(TimeSpan.TicksPerSecond/60),
                 TimeSpan.FromTicks(TimeSpan.TicksPerSecond/10),
                 t => _simulation.Simulate((float) t.TotalSeconds),
-                t => { Invalidate(); });
+                t => Invalidate());
 
             Application.Idle += Application_Idle;
         }
