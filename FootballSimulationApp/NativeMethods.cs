@@ -6,6 +6,7 @@ namespace FootballSimulationApp
 {
     internal static class NativeMethods
     {
+        /// <summary>True if a message is available; otherwise, false.</summary>
         public static bool IsMessageAvailable
         {
             get
