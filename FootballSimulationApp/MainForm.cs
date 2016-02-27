@@ -11,7 +11,7 @@ namespace FootballSimulationApp
         private readonly ISimulationDrawingStrategy _drawingStrategy;
         private readonly FixedTimeStepGameLoop _gameLoop;
         private readonly Simulation _simulation;
-        private Bitmap _backBuffer;
+        private Bitmap _backBuffer = new Bitmap(1, 1);
 
         public MainForm()
         {
