@@ -41,7 +41,7 @@ namespace FootballSimulationApp
         protected override void Dispose(bool disposing)
         {
             Application.Idle -= Application_Idle;
-            _backBuffer?.Dispose();
+            _backBuffer.Dispose();
             base.Dispose(disposing);
         }
 
@@ -59,7 +59,7 @@ namespace FootballSimulationApp
 
         private void MainForm_Resize(object sender, EventArgs e)
         {
-            _backBuffer?.Dispose();
+            _backBuffer.Dispose();
             _backBuffer = new Bitmap(ClientWidth, ClientHeight);
         }
 
