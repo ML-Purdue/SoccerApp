@@ -23,7 +23,7 @@ namespace FootballSimulationApp
         /// <param name="radiusX">The radius on the x axis.</param>
         /// <param name="radiusY">The radius on the y axis.</param>
         public static void FillEllipse(this Graphics g, Brush brush, Vector2 center, float radiusX, float radiusY)
-            => g.FillEllipse(brush, center.X - radiusX/2, center.Y/2 - radiusY, radiusX, radiusY);
+            => g.FillEllipse(brush, center.X - radiusX, center.Y - radiusY, radiusX*2, radiusY*2);
 
         /// <summary>
         ///     Fills the interior of a circle defined by a center point and the radius.
@@ -44,7 +44,7 @@ namespace FootballSimulationApp
         /// <param name="radiusX">The radius on the x axis.</param>
         /// <param name="radiusY">The radius on the y axis.</param>
         public static void DrawEllipse(this Graphics g, Pen pen, Vector2 center, float radiusX, float radiusY)
-            => g.DrawEllipse(pen, center.X - radiusX/2, center.Y - radiusY/2, radiusX, radiusY);
+            => g.DrawEllipse(pen, center.X - radiusX, center.Y - radiusY, radiusX*2, radiusY*2);
 
         /// <summary>
         ///     Draws a circle defined by a center point and the radius.

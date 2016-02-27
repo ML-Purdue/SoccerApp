@@ -76,7 +76,7 @@ namespace FootballSimulationApp
             {
                 m.Translate(pointMass.Position.X, pointMass.Position.Y);
                 m.Rotate((float)(Math.Atan2(pointMass.Velocity.Y, pointMass.Velocity.X) * 180 / Math.PI));
-                m.Scale(pointMass.Radius / 2, pointMass.Radius / 2);
+                m.Scale(pointMass.Radius, pointMass.Radius);
                 m.TransformPoints(triangle);
             }
 
