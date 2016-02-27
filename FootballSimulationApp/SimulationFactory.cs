@@ -36,7 +36,7 @@ namespace FootballSimulationApp
             var team2 = new Team(NullTeamStrategy.Instance, new ReadOnlyCollection<PointMass>(team2Players), team2Goal);
             var ball = new PointMass(1, 2.5f, 100, 100, Vector2.Zero, Vector2.Zero);
 
-            return new Simulation(new ReadOnlyCollection<Team>(new[] { team1, team2 }), ball, pitch, 0.05f);
+            return new Simulation(new ReadOnlyCollection<Team>(new[] { team1, team2 }), ball, pitch, 3);
         }
     }
 }
