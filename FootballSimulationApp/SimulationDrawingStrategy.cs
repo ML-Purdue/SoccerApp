@@ -7,13 +7,22 @@ using FootballSimulation;
 
 namespace FootballSimulationApp
 {
-    internal sealed class SimulationDrawingStrategy : ISimulationDrawingStrategy, IDisposable
+    internal sealed class SimulationDrawingStrategy : ISimulationDrawingStrategy
     {
         private readonly Brush _ballBrush;
         private readonly Pen _linePen;
         private readonly IEnumerable<Brush> _teamBrushes;
         private readonly IEnumerable<Pen> _teamPens;
 
+        /// <summary>
+        ///     Initializes a new instance of this class with the specified colors used for drawing the game.
+        /// </summary>
+        /// <param name="line">The line color.</param>
+        /// <param name="ball">The ball color.</param>
+        /// <param name="teamColors">
+        ///     The colors of each of the teams. Colors should be in order of the <c>Teams</c> property in
+        ///     <see cref="ISimulation" />.
+        /// </param>
         public SimulationDrawingStrategy(Color line, Color ball, IList<Color> teamColors)
         {
             _linePen = new Pen(line);
@@ -22,6 +31,9 @@ namespace FootballSimulationApp
             _teamBrushes = from c in teamColors select new SolidBrush(c);
         }
 
+        /// <summary>
+        ///     Disposes the pens and brushes created by this class.
+        /// </summary>
         public void Dispose()
         {
             _linePen.Dispose();
@@ -30,6 +42,11 @@ namespace FootballSimulationApp
             _teamBrushes.ForEach(b => b.Dispose());
         }
 
+        /// <summary>
+        ///     Draws the simualation with the specified colors.
+        /// </summary>
+        /// <param name="g">The graphics context.</param>
+        /// <param name="s">The simulation to draw.</param>
         public void Draw(Graphics g, ISimulation s)
         {
             g.SmoothingMode = SmoothingMode.AntiAlias;

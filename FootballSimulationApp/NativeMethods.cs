@@ -6,9 +6,19 @@ namespace FootballSimulationApp
 {
     internal static class NativeMethods
     {
+        /// <summary>True if a message is available; otherwise, false.</summary>
+        public static bool IsMessageAvailable
+        {
+            get
+            {
+                Message message;
+                return PeekMessage(out message, IntPtr.Zero, 0, 0, 0);
+            }
+        }
+
         [DllImport("User32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
-        public static extern bool PeekMessage(
+        private static extern bool PeekMessage(
             out Message message,
             IntPtr hWnd,
             uint filterMin,
@@ -16,7 +26,7 @@ namespace FootballSimulationApp
             uint flags);
 
         [StructLayout(LayoutKind.Sequential)]
-        public struct Message
+        private struct Message
         {
             private readonly IntPtr hWnd;
             private readonly uint Msg;
