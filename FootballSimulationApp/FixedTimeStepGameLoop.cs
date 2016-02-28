@@ -47,6 +47,9 @@ namespace FootballSimulationApp
         /// <summary>The maximum time between draw calls.</summary>
         public TimeSpan MaxElapsedTime { get; }
 
+        /// <summary>Gets a value indicating whether the game loop is running.</summary>
+        public bool IsRunning => _stopwatch.IsRunning;
+
         /// <summary>
         ///     Starts the game loop.
         /// </summary>

@@ -7,24 +7,28 @@ namespace FootballSimulationApp
 {
     internal sealed partial class MainForm : Form
     {
-        private readonly Color _clearColor = Color.Green;
+        private readonly Color _clearColor;
         private readonly ISimulationDrawingStrategy _drawingStrategy;
         private readonly FixedTimeStepGameLoop _gameLoop;
-        private readonly Simulation _simulation;
-        private Bitmap _backBuffer = new Bitmap(1, 1);
+        private Bitmap _backBuffer;
+        private Simulation _simulation;
 
-        public MainForm()
+        public MainForm(
+            TimeSpan targetElapsedTime,
+            TimeSpan maxElapsedTime,
+            Color clearColor,
+            ISimulationDrawingStrategy drawingStrategy)
         {
             InitializeComponent();
 
             SetStyle(ControlStyles.UserPaint | ControlStyles.AllPaintingInWmPaint | ControlStyles.DoubleBuffer, true);
 
-            _simulation = SimulationFactory.Create2V2Simulation();
-            _drawingStrategy = new SimulationDrawingStrategy(Color.White, Color.Black,
-                new[] {Color.OrangeRed, Color.Blue}, new Font("Arial", 8));
+            _clearColor = clearColor;
+            _drawingStrategy = drawingStrategy;
+            _backBuffer = new Bitmap(1, 1);
             _gameLoop = new FixedTimeStepGameLoop(
-                TimeSpan.FromTicks(TimeSpan.TicksPerSecond/60),
-                TimeSpan.FromTicks(TimeSpan.TicksPerSecond/10),
+                targetElapsedTime,
+                maxElapsedTime,
                 t => _simulation.Simulate((float) t.TotalSeconds),
                 t => Invalidate());
 
@@ -42,7 +46,6 @@ namespace FootballSimulationApp
         {
             Application.Idle -= Application_Idle;
             _backBuffer.Dispose();
-            _drawingStrategy.Dispose();
             base.Dispose(disposing);
         }
 
@@ -52,11 +55,7 @@ namespace FootballSimulationApp
                 _gameLoop.Tick();
         }
 
-        private void MainForm_Load(object sender, EventArgs e)
-        {
-            _backBuffer = new Bitmap(ClientWidth, ClientHeight);
-            _gameLoop.Start();
-        }
+        private void MainForm_Load(object sender, EventArgs e) => MainForm_Resize(sender, e);
 
         private void MainForm_Resize(object sender, EventArgs e)
         {
@@ -66,6 +65,12 @@ namespace FootballSimulationApp
 
         private void MainForm_Paint(object sender, PaintEventArgs e)
         {
+            if (!_gameLoop.IsRunning)
+            {
+                e.Graphics.Clear(_clearColor);
+                return;
+            }
+
             using (var g = Graphics.FromImage(_backBuffer))
             {
                 var clientHeight = ClientHeight - menuStrip.Height;
@@ -83,7 +88,8 @@ namespace FootballSimulationApp
 
         private void newGameToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            throw new NotImplementedException();
+            _simulation = SimulationFactory.Create2V2Simulation();
+            _gameLoop.Start();
         }
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e) => Close();
