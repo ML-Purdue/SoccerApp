@@ -24,7 +24,7 @@ namespace FootballSimulationApp
                 if ((p.Position - Vector2.Zero).Length() < Math.Sqrt(p.Radius))
                 {
                     kickCounter++;
-                    return new Kick(p, new Vector2(-100, 0));
+                    return new Kick(p, new Vector2(-1000, 0));
                 }
 
             }
