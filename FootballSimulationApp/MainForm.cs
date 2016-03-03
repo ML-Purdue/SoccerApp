@@ -7,37 +7,30 @@ namespace FootballSimulationApp
 {
     internal sealed partial class MainForm : Form
     {
-        private readonly Color _clearColor;
         private readonly ISimulationDrawingStrategy _drawingStrategy;
-        private readonly FixedTimeStepGameLoop _gameLoop;
-        private Bitmap _backBuffer;
+        private readonly ISimulationLoop _gameLoop;
+
+        private bool _paused;
+        private bool _resizing;
         private Simulation _simulation;
 
-        public MainForm(
-            TimeSpan targetElapsedTime,
-            TimeSpan maxElapsedTime,
-            Color clearColor,
-            ISimulationDrawingStrategy drawingStrategy)
+        public MainForm(ISimulationLoop gameLoop, ISimulationDrawingStrategy drawingStrategy)
         {
             InitializeComponent();
 
+            Resize += (s, a) => Invalidate();
+            ResizeBegin += (s, a) => _resizing = true;
+            ResizeEnd += (s, a) => _resizing = false;
+
             SetStyle(ControlStyles.UserPaint | ControlStyles.AllPaintingInWmPaint | ControlStyles.DoubleBuffer, true);
 
-            _clearColor = clearColor;
             _drawingStrategy = drawingStrategy;
-            _backBuffer = new Bitmap(1, 1);
-            _gameLoop = new FixedTimeStepGameLoop(
-                targetElapsedTime,
-                maxElapsedTime,
-                t => _simulation.Simulate((float) t.TotalSeconds),
-                t => Invalidate());
+            _gameLoop = gameLoop;
+            _gameLoop.SetUpdate(t => { if (!_paused && !_resizing) _simulation.Simulate((float) t.TotalSeconds); });
+            _gameLoop.SetDraw(t => Invalidate());
 
             Application.Idle += Application_Idle;
         }
-
-        private int ClientWidth => ClientSize.Width;
-
-        private int ClientHeight => ClientSize.Height;
 
         private static float ScaleToFit(SizeF size, float width, float height)
             => size.Width/size.Height >= width/height ? width/size.Width : height/size.Height;
@@ -45,8 +38,15 @@ namespace FootballSimulationApp
         protected override void Dispose(bool disposing)
         {
             Application.Idle -= Application_Idle;
-            _backBuffer.Dispose();
             base.Dispose(disposing);
+        }
+
+        private void OnFirstNewGame()
+        {
+            pauseToolStripMenuItem.Enabled = true;
+            restartToolStripMenuItem.Enabled = true;
+            Paint += MainForm_Paint;
+            _gameLoop.Start();
         }
 
         private void Application_Idle(object sender, EventArgs e)
@@ -55,50 +55,41 @@ namespace FootballSimulationApp
                 _gameLoop.Tick();
         }
 
-        private void MainForm_Load(object sender, EventArgs e) => MainForm_Resize(sender, e);
-
-        private void MainForm_Resize(object sender, EventArgs e)
-        {
-            _backBuffer.Dispose();
-            _backBuffer = new Bitmap(ClientWidth, ClientHeight);
-        }
-
         private void MainForm_Paint(object sender, PaintEventArgs e)
         {
-            if (!_gameLoop.IsRunning)
-            {
-                e.Graphics.Clear(_clearColor);
-                return;
-            }
+            var height = (float)(ClientSize.Height - menuStrip.Height);
+            var s = 0.9f*ScaleToFit(_simulation.PitchBounds.Size, ClientSize.Width, height);
 
-            using (var g = Graphics.FromImage(_backBuffer))
-            {
-                var clientHeight = ClientHeight - menuStrip.Height;
-                var s = 0.9f*ScaleToFit(_simulation.PitchBounds.Size, ClientWidth, ClientHeight);
+            e.Graphics.Clear(BackColor);
+            e.Graphics.TranslateTransform(ClientSize.Width/2f, height/2 + menuStrip.Height);
+            e.Graphics.ScaleTransform(s, s);
 
-                g.Clear(_clearColor);
-                g.TranslateTransform(ClientWidth/2f, clientHeight/2f + menuStrip.Height);
-                g.ScaleTransform(s, s);
-
-                _drawingStrategy.Draw(g, _simulation);
-            }
-
-            e.Graphics.DrawImageUnscaled(_backBuffer, Point.Empty);
+            _drawingStrategy.Draw(e.Graphics, _simulation);
         }
-
+        
         private void newGameToolStripMenuItem_Click(object sender, EventArgs e)
         {
             _simulation = SimulationFactory.Create2V2Simulation();
-            _gameLoop.Start();
+            if (!_gameLoop.IsRunning)
+                OnFirstNewGame();
         }
+
+        private void pauseToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            _paused = !_paused;
+            pauseToolStripMenuItem.Text = _paused ? "Continue" : "Pause";
+            Text = "Football Simulation"; // _simulation.Name != string.Empty ? _simulation.Name : assemblyTitle;
+            if (_paused) Text += " (Paused)";
+        }
+
+        private void restartToolStripMenuItem_Click(object sender, EventArgs e) { }
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e) => Close();
 
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var aboutBox = new AboutBox();
-            aboutBox.Show();
-            aboutBox.Closed += (s, a) => aboutBox.Dispose();
+            using (var aboutBox = new AboutBox())
+                aboutBox.ShowDialog(this);
         }
     }
 }

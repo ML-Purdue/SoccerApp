@@ -34,10 +34,13 @@ namespace FootballSimulationApp
                 var drawingStrategy = new SimulationDrawingStrategy(Color.FromName(lineColor), Color.FromName(ballColor),
                     (from n in teamColors select Color.FromName(n)).ToList(), font))
             using (
-                var form = new MainForm(TimeSpan.FromTicks(TimeSpan.TicksPerSecond/targetFramesPerSecond),
-                    TimeSpan.FromTicks(TimeSpan.TicksPerSecond/targetFramesPerSecond*maxFrameLag),
-                    Color.FromName(pitchColor), drawingStrategy))
+                var form = new MainForm(
+                    new FixedTimeStepSimulationLoop(
+                        TimeSpan.FromTicks(TimeSpan.TicksPerSecond/targetFramesPerSecond),
+                        TimeSpan.FromTicks(TimeSpan.TicksPerSecond/targetFramesPerSecond*maxFrameLag)),
+                    drawingStrategy))
             {
+                form.BackColor = Color.FromName(pitchColor);
                 Application.Run(form);
             }
         }

@@ -1,44 +1,34 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
+using System.Threading;
 
 namespace FootballSimulationApp
 {
-    internal sealed class FixedTimeStepGameLoop
+    internal sealed class FixedTimeStepSimulationLoop : ISimulationLoop
     {
-        /// <summary>
-        ///     A method called on a regular interval.
-        /// </summary>
-        /// <param name="step">The time passed since the last call.</param>
-        public delegate void Step(TimeSpan step);
+        private static readonly Action<TimeSpan> DefaultSimulationStep = t => { };
 
-        private readonly Step _draw;
         private readonly Stopwatch _stopwatch = new Stopwatch();
-        private readonly Step _update;
-
         private TimeSpan _accumulatedTime;
+        private Action<TimeSpan> _draw = DefaultSimulationStep;
         private TimeSpan _lastTime;
+        private Action<TimeSpan> _update = DefaultSimulationStep;
 
         /// <summary>
-        ///     After <see cref="Start" /> has been called, <see cref="FixedTimeStepGameLoop" /> will try to call <c>update</c> on
-        ///     the fixed interval specified by <c>targetElapsedTime</c>. After this, if it is not time to call <c>update</c>
-        ///     again, <c>draw</c> is call. The game loop idles until the next time to call <c>update</c>.
+        ///     After <see cref="Start" /> has been called, <see cref="FixedTimeStepSimulationLoop" /> will try to call
+        ///     the update function on the fixed interval specified by <see cref="TargetElapsedTime" />. After this, if it is not
+        ///     time to call update again, the draw function is called. The game loop idles until the next time to call update.
         /// </summary>
         /// <param name="targetElapsedTime">The target time between calls to <c>update</c>.</param>
         /// <param name="maxElapsedTime">The maximum amount of time between calls to <c>draw</c>.</param>
-        /// <param name="update">Processes game logic.</param>
-        /// <param name="draw">Draws a frame.</param>
-        public FixedTimeStepGameLoop(TimeSpan targetElapsedTime, TimeSpan maxElapsedTime, Step update, Step draw)
+        public FixedTimeStepSimulationLoop(TimeSpan targetElapsedTime, TimeSpan maxElapsedTime)
         {
             Contract.Requires<ArgumentException>(targetElapsedTime.Ticks > 0);
             Contract.Requires<ArgumentException>(targetElapsedTime <= maxElapsedTime);
-            Contract.Requires<ArgumentNullException>(update != null);
-            Contract.Requires<ArgumentNullException>(draw != null);
 
             TargetElapsedTime = targetElapsedTime;
             MaxElapsedTime = maxElapsedTime;
-            _update = update;
-            _draw = draw;
         }
 
         /// <summary>The target time between update calls.</summary>
@@ -56,13 +46,28 @@ namespace FootballSimulationApp
         public void Start() => _stopwatch.Start();
 
         /// <summary>
+        ///     Sets the update function that is called when the simulation needs to update.
+        /// </summary>
+        /// <param name="step">The update function.</param>
+        public void SetUpdate(Action<TimeSpan> step) => _update = step ?? DefaultSimulationStep;
+
+        /// <summary>
+        ///     Sets the draw function that is called when the simulation needs to draw.
+        /// </summary>
+        /// <param name="step">The draw function.</param>
+        public void SetDraw(Action<TimeSpan> step) => _draw = step ?? DefaultSimulationStep;
+
+        /// <summary>
         ///     Calls update and draw when appropriate. This method should be called
         ///     whenever the application does not have messages to process.
         /// </summary>
         public void Tick()
         {
             if ((_accumulatedTime += GetElapsedTime()) < TargetElapsedTime)
+            {
+                Thread.Sleep(TargetElapsedTime - _accumulatedTime);
                 return;
+            }
 
             var totalElapsedTime = _accumulatedTime;
             _update(TargetElapsedTime);
