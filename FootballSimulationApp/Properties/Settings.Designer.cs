@@ -22,5 +22,89 @@ namespace FootballSimulationApp.Properties {
                 return defaultInstance;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("00:00:00.0166666")]
+        public global::System.TimeSpan TargetElapsedTime {
+            get {
+                return ((global::System.TimeSpan)(this["TargetElapsedTime"]));
+            }
+            set {
+                this["TargetElapsedTime"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("00:00:00.0833330")]
+        public global::System.TimeSpan MaxElapsedTime {
+            get {
+                return ((global::System.TimeSpan)(this["MaxElapsedTime"]));
+            }
+            set {
+                this["MaxElapsedTime"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Green")]
+        public string PitchColor {
+            get {
+                return ((string)(this["PitchColor"]));
+            }
+            set {
+                this["PitchColor"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("White")]
+        public string LineColor {
+            get {
+                return ((string)(this["LineColor"]));
+            }
+            set {
+                this["LineColor"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Black")]
+        public string BallColor {
+            get {
+                return ((string)(this["BallColor"]));
+            }
+            set {
+                this["BallColor"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Red")]
+        public string Team1Color {
+            get {
+                return ((string)(this["Team1Color"]));
+            }
+            set {
+                this["Team1Color"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Blue")]
+        public string Team2Color {
+            get {
+                return ((string)(this["Team2Color"]));
+            }
+            set {
+                this["Team2Color"] = value;
+            }
+        }
     }
 }

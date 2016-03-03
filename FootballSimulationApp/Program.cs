@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Drawing;
-using System.Linq;
 using System.Windows.Forms;
-using System.Xml;
 
 namespace FootballSimulationApp
 {
@@ -17,38 +15,18 @@ namespace FootballSimulationApp
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            var document = new XmlDocument();
-            document.Load("Settings.xml");
+            var settings = Properties.Settings.Default;
+            var drawingStrategy = new SimulationDrawingStrategy(
+                Color.FromName(settings.LineColor),
+                Color.FromName(settings.BallColor),
+                new[] {Color.FromName(settings.Team1Color), Color.FromName(settings.Team2Color)},
+                SystemFonts.CaptionFont);
+            var form = new MainForm(
+                new FixedTimeStepSimulationLoop(settings.TargetElapsedTime, settings.MaxElapsedTime),
+                drawingStrategy)
+            {BackColor = Color.FromName(settings.PitchColor)};
 
-            var targetFramesPerSecond = GetElementInnerTextAsInteger(document, "TargetFramesPerSecond");
-            var maxFrameLag = GetElementInnerTextAsInteger(document, "MaxFrameLag");
-            var fontSize = GetElementInnerTextAsInteger(document, "FontSize");
-            var pitchColor = GetElementInnerText(document, "PitchColor");
-            var lineColor = GetElementInnerText(document, "LineColor");
-            var ballColor = GetElementInnerText(document, "BallColor");
-            var teamColors = from n in document.GetElementsByTagName("TeamColors")[0].ChildNodes.Cast<XmlNode>()
-                select n.InnerText;
-
-            using (var font = new Font(SystemFonts.CaptionFont.Name, fontSize))
-            using (
-                var drawingStrategy = new SimulationDrawingStrategy(Color.FromName(lineColor), Color.FromName(ballColor),
-                    (from n in teamColors select Color.FromName(n)).ToList(), font))
-            using (
-                var form = new MainForm(
-                    new FixedTimeStepSimulationLoop(
-                        TimeSpan.FromTicks(TimeSpan.TicksPerSecond/targetFramesPerSecond),
-                        TimeSpan.FromTicks(TimeSpan.TicksPerSecond/targetFramesPerSecond*maxFrameLag)),
-                    drawingStrategy))
-            {
-                form.BackColor = Color.FromName(pitchColor);
-                Application.Run(form);
-            }
+            Application.Run(form);
         }
-
-        private static string GetElementInnerText(XmlDocument document, string name)
-            => document.GetElementsByTagName(name)[0].InnerText;
-
-        private static int GetElementInnerTextAsInteger(XmlDocument document, string name)
-            => int.Parse(GetElementInnerText(document, name));
     }
 }
