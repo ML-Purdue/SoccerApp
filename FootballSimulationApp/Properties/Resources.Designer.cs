@@ -59,5 +59,50 @@ namespace FootballSimulationApp.Properties {
                 resourceCulture = value;
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to About .
+        /// </summary>
+        internal static string AboutBox_About {
+            get {
+                return ResourceManager.GetString("AboutBox_About", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Version .
+        /// </summary>
+        internal static string AboutBox_Version {
+            get {
+                return ResourceManager.GetString("AboutBox_Version", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Continue.
+        /// </summary>
+        internal static string MainForm_Continue {
+            get {
+                return ResourceManager.GetString("MainForm_Continue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Pause.
+        /// </summary>
+        internal static string MainForm_Pause {
+            get {
+                return ResourceManager.GetString("MainForm_Pause", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to  (Paused).
+        /// </summary>
+        internal static string MainForm_Paused {
+            get {
+                return ResourceManager.GetString("MainForm_Paused", resourceCulture);
+            }
+        }
     }
 }

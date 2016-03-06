@@ -2,6 +2,7 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 using FootballSimulation;
+using FootballSimulationApp.Properties;
 
 namespace FootballSimulationApp
 {
@@ -77,9 +78,9 @@ namespace FootballSimulationApp
         private void pauseToolStripMenuItem_Click(object sender, EventArgs e)
         {
             _paused = !_paused;
-            pauseToolStripMenuItem.Text = _paused ? "Continue" : "Pause";
+            pauseToolStripMenuItem.Text = _paused ? Resources.MainForm_Continue : Resources.MainForm_Pause;
             Text = "Football Simulation"; // _simulation.Name != string.Empty ? _simulation.Name : assemblyTitle;
-            if (_paused) Text += " (Paused)";
+            if (_paused) Text += Resources.MainForm_Paused;
         }
 
         private void restartToolStripMenuItem_Click(object sender, EventArgs e) { }

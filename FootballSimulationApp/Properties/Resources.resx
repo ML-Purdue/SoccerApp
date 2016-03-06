@@ -114,4 +114,19 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="AboutBox_About" xml:space="preserve">
+    <value>About </value>
+  </data>
+  <data name="AboutBox_Version" xml:space="preserve">
+    <value>Version </value>
+  </data>
+  <data name="MainForm_Paused" xml:space="preserve">
+    <value> (Paused)</value>
+  </data>
+  <data name="MainForm_Pause" xml:space="preserve">
+    <value>Pause</value>
+  </data>
+  <data name="MainForm_Continue" xml:space="preserve">
+    <value>Continue</value>
+  </data>
 </root>
