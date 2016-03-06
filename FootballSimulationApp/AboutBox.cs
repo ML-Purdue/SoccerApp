@@ -4,7 +4,7 @@ using System.Windows.Forms;
 
 namespace FootballSimulationApp
 {
-    internal partial class AboutBox : Form
+    internal sealed partial class AboutBox : Form
     {
         public AboutBox()
         {

@@ -5,7 +5,7 @@ namespace FootballSimulationApp
     /// <summary>
     ///     A simulation loop.
     /// </summary>
-    public interface ISimulationLoop
+    internal interface ISimulationLoop
     {
         /// <summary>Gets a value indicating whether the game loop is running.</summary>
         bool IsRunning { get; }

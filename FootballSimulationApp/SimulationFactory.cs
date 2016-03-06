@@ -5,7 +5,7 @@ using FootballSimulation;
 
 namespace FootballSimulationApp
 {
-    public static class SimulationFactory
+    internal static class SimulationFactory
     {
         public static Simulation Create2V2Simulation()
         {
