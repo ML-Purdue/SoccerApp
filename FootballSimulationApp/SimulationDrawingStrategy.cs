@@ -86,9 +86,6 @@ namespace FootballSimulationApp
 
         private static void DrawDebugInfo(IPointMass pointMass, Brush brush, Font font, Graphics g)
         {
-            g.DrawString("Position: " + pointMass.Position + 
-                "\nVelocity: " + pointMass.Velocity + 
-                "\nAcceleration: " + pointMass.Acceleration, font, brush, new PointF(pointMass.Position.X, pointMass.Position.Y));
         }
 
         private void DrawTeams(Graphics g, ISimulation s)
@@ -104,6 +101,9 @@ namespace FootballSimulationApp
                     DrawPointMass(p, pe.Current, be.Current, g);
                     DrawDebugInfo(p, be.Current, _font, g);
                 });
+
+                if (t is KeepawayTeam)
+                    ((KeepawayTeam)t).DrawDebugInfo(g);
             }
         }
 

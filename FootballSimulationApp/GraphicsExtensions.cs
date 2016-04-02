@@ -55,5 +55,15 @@ namespace FootballSimulationApp
         /// <param name="radius">The radius of the circle.</param>
         public static void DrawCircle(this Graphics g, Pen pen, Vector2 center, float radius)
             => g.DrawEllipse(pen, center, radius, radius);
+
+        /// <summary>
+        ///     Draws a line connecting two points specified by the vectors.
+        /// </summary>
+        /// <param name="g">The drawing surface.</param>
+        /// <param name="pen">Pen that determines the color, width, and style of the line.</param>
+        /// <param name="pt1">The first point.</param>
+        /// <param name="pt2">The second point.</param>
+        public static void DrawLine(this Graphics g, Pen pen, Vector2 pt1, Vector2 pt2)
+            => g.DrawLine(pen, pt1.X, pt1.Y, pt2.X, pt2.Y);
     }
 }
