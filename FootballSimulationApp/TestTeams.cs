@@ -1,10 +1,9 @@
-﻿using System.Collections.ObjectModel;
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Drawing;
-using FootballSimulation;
-using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
-using System;
+using FootballSimulation;
 
 namespace FootballSimulationApp
 {
@@ -23,7 +22,7 @@ namespace FootballSimulationApp
 
     internal class KeepawayTeam : Team
     {
-        private Dictionary<IPointMass, string> messages = new Dictionary<IPointMass, string>();
+        private readonly Dictionary<IPointMass, string> messages = new Dictionary<IPointMass, string>();
 
         public KeepawayTeam(ReadOnlyCollection<PointMass> players, RectangleF goalBounds) :
             base(players, goalBounds)
@@ -32,16 +31,23 @@ namespace FootballSimulationApp
 
         public override Kick Execute(ISimulation simulation)
         {
-            var allPlayers = simulation.Teams[0].Players.Concat(simulation.Teams[1].Players);
-            var ballChaser = FootballStrategies.ClosestToPoint(Players, (PointMass)simulation.Ball, 100);
-            Kick kick = Kick.None;
+            var ballChaser = FootballStrategies.ClosestPlayerToPoint(Players, simulation.Ball, 100);
+            var kick = Kick.None;
 
             foreach (var player in Players)
             {
                 if (player == ballChaser)
-                    kick = FootballStrategies.ChaseBall(player, this, simulation.Ball, simulation);
+                {
+                    player.Force = SteeringStrategies.Pursue(player, simulation.Ball, 1);
+                    kick = (player.Position - simulation.Ball.Position).Length() < 20
+                        ? new Kick(player, new Vector2(-100, 0))
+                        : Kick.None;
+                }
                 else
-                    FootballStrategies.SpreadOut(player, allPlayers, simulation.PitchBounds, -150, 100);
+                {
+                    var allPlayers = simulation.Teams[0].Players.Concat(simulation.Teams[1].Players);
+                    FootballStrategies.SpreadOut(player, allPlayers, simulation.PitchBounds, 150, 100);
+                }
             }
 
             return kick;
@@ -51,8 +57,8 @@ namespace FootballSimulationApp
         {
             foreach (var p in Players)
             {
-                g.DrawLine(Pens.Orange, p.Position, p.Position + 3 * p.Velocity);
-                g.DrawLine(Pens.Purple, p.Position, p.Position + 3 * p.Acceleration);
+                g.DrawLine(Pens.Orange, p.Position, p.Position + 3*p.Velocity);
+                g.DrawLine(Pens.Purple, p.Position, p.Position + 3*p.Acceleration);
                 string message;
                 if (messages.TryGetValue(p, out message))
                     g.DrawString(message, SystemFonts.DefaultFont, Brushes.Black, p.Position.X + 10, p.Position.Y + 10);
