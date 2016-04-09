@@ -102,8 +102,7 @@ namespace FootballSimulationApp
                     DrawDebugInfo(p, be.Current, _font, g);
                 });
 
-                if (t is KeepawayTeam)
-                    ((KeepawayTeam)t).DrawDebugInfo(g);
+                ((Team)t).DrawDebugInfo(s, g);
             }
         }
 
