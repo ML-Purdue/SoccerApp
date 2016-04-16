@@ -33,8 +33,8 @@ namespace FootballSimulationApp
             var team1Goal = new RectangleF(-w / 2 - goalW, -goalH / 2, goalW, goalH);
             var team2Goal = new RectangleF(w / 2, -goalH / 2, goalW, goalH);
             var team1 = new KeepawayTeam(new ReadOnlyCollection<PointMass>(team1Players), team1Goal);
-            var team2 = new NullTeam(new ReadOnlyCollection<PointMass>(team2Players), team2Goal);
-            var ball = new PointMass(1, 2.5f, 100000, 100, new Vector2(-100, 0), Vector2.Zero);
+            var team2 = new KeepawayTeam(new ReadOnlyCollection<PointMass>(team2Players), team2Goal);
+            var ball = new PointMass(1, 2.5f, 100000, 100, new Vector2(0, 0), Vector2.Zero);
 
             return new Simulation(new ReadOnlyCollection<Team>(new Team[] { team1, team2 }), ball, pitch, 3);
         }

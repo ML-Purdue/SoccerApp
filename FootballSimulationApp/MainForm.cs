@@ -92,5 +92,10 @@ namespace FootballSimulationApp
             using (var aboutBox = new AboutBox())
                 aboutBox.ShowDialog(this);
         }
+
+        private void MainForm_Load(object sender, EventArgs e)
+        {
+
+        }
     }
 }
