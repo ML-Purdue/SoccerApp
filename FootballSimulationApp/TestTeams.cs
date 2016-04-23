@@ -58,23 +58,28 @@ namespace FootballSimulationApp
             {
                 if (player == ballChaser)
                 {
-                    messages[player] = "Chaser";
+                    //messages[player] = "Chaser";
 
                     var playersExceptSelf = Players.ToList();
                     playersExceptSelf.Remove(player);
 
                     player.Force = SteeringStrategies.Pursue(player, simulation.Ball, 1);
 
-                    if ((player.Position - simulation.Ball.Position).Length() < 20) {
-                        var isLeftTeam = this.GoalBounds.Left > 0 ? false : true;
+                    if ((player.Position - simulation.Ball.Position).Length() < player.Radius + simulation.Ball.Radius) {
+                        var isLeftTeam = this.GoalBounds.Left > 0 ? true : false;
                         PointMass[] arr = new PointMass[7];
                         playersExceptSelf.CopyTo(arr, 0);
-                        arr[4] = new PointMass(1, 1, 1, 1, new Vector2(isLeftTeam ? this.GoalBounds.Left : this.GoalBounds.Right, this.GoalBounds.Top - (0.2f) * this.GoalBounds.Height), Vector2.Zero);
-                        arr[5] = new PointMass(1, 1, 1, 1, new Vector2(isLeftTeam ? this.GoalBounds.Left : this.GoalBounds.Right, this.GoalBounds.Top - (0.5f) * this.GoalBounds.Height), Vector2.Zero);
-                        arr[6] = new PointMass(1, 1, 1, 1, new Vector2(isLeftTeam ? this.GoalBounds.Left : this.GoalBounds.Right, this.GoalBounds.Top - (0.8f) * this.GoalBounds.Height), Vector2.Zero);
+                        arr[4] = new PointMass(1, 1, 1, 1, new Vector2(isLeftTeam ? this.GoalBounds.Left : this.GoalBounds.Right, this.GoalBounds.Top + (0.2f) * this.GoalBounds.Height), Vector2.Zero);
+                        arr[5] = new PointMass(1, 1, 1, 1, new Vector2(isLeftTeam ? this.GoalBounds.Left : this.GoalBounds.Right, this.GoalBounds.Top + (0.5f) * this.GoalBounds.Height), Vector2.Zero);
+                        arr[6] = new PointMass(1, 1, 1, 1, new Vector2(isLeftTeam ? this.GoalBounds.Left : this.GoalBounds.Right, this.GoalBounds.Top + (0.8f) * this.GoalBounds.Height), Vector2.Zero);
+                        arr[4].id = "GT";
+                        arr[5].id = "GM";
+                        arr[6].id = "GB";
                         ReadOnlyCollection<PointMass> roc = new ReadOnlyCollection<PointMass>(arr);
                         Vector2 middleOfGoal = new Vector2(isLeftTeam ? this.GoalBounds.Left : this.GoalBounds.Right, this.GoalBounds.Top - (0.5f) * this.GoalBounds.Height);
-                        k = kick = FootballStrategies.PassToPlayer(player, ClosestPlayerToPoint(roc, player, 100, middleOfGoal), simulation.Ball);
+                        IPointMass kickTarget = ClosestPlayerToPoint(roc, player, 1, middleOfGoal);
+                        messages[player] = "Chaser T: " + kickTarget.id;
+                        k = kick = FootballStrategies.PassToPlayer(player, kickTarget, simulation.Ball);
                     }  else
                         k = kick = Kick.None;
                 }
@@ -84,7 +89,7 @@ namespace FootballSimulationApp
 
                     var allPlayers = simulation.Teams[0].Players.Concat(simulation.Teams[1].Players);
                     if (isOutsideOfField(player, simulation.PitchBounds))
-                        SteeringStrategies.Arrive(player, Vector2.Zero, 10000000, 1);
+                        player.Force = SteeringStrategies.Seek(player, Vector2.Zero, player.MaxSpeed);
                     else
                         FootballStrategies.SpreadOut(player, allPlayers, simulation.PitchBounds, 150, 100);
                 }
@@ -116,7 +121,7 @@ namespace FootballSimulationApp
 
                 string message;
                 if (messages.TryGetValue(p, out message))
-                    g.DrawString(message, SystemFonts.DefaultFont, Brushes.Black, p.Position.X + 10, p.Position.Y + 10);
+                    g.DrawString(p.id + ": " + message, SystemFonts.DefaultFont, Brushes.Black, p.Position.X + 10, p.Position.Y + 10);
             }
         }
     }
